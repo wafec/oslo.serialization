@@ -38,6 +38,7 @@ import json
 import uuid
 import warnings
 from xmlrpc import client as xmlrpclib
+from wafec.fi.hypothesis.utils.wrapper_ext import CustomWrapperExt
 
 from oslo_utils import encodeutils
 from oslo_utils import importutils
@@ -198,6 +199,10 @@ def dumps(obj, default=to_primitive, **kwargs):
     Use dump_as_bytes() to ensure that the result type is ``bytes`` on Python 2
     and Python 3.
     """
+
+    if type(obj) == CustomWrapperExt:
+        obj = obj.__wrapped__
+
     return json.dumps(obj, default=default, **kwargs)
 
 
