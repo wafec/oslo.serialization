@@ -43,6 +43,8 @@ from oslo_utils import encodeutils
 from oslo_utils import importutils
 from oslo_utils import timeutils
 
+from wafec_wrapt_custom.wrappers import WrapperTest
+
 ipaddress = importutils.try_import("ipaddress")
 netaddr = importutils.try_import("netaddr")
 
@@ -85,6 +87,8 @@ def to_primitive(value, convert_instances=False, convert_datetime=True,
     orig_fallback = fallback
     if fallback is None:
         fallback = str
+
+    value = WrapperTest.unwrap(value)
 
     # handle obvious types first - order of basic types determined by running
     # full tests on nova project, resulting in the following counts:
@@ -198,7 +202,7 @@ def dumps(obj, default=to_primitive, **kwargs):
     Use dump_as_bytes() to ensure that the result type is ``bytes`` on Python 2
     and Python 3.
     """
-    return json.dumps(obj, default=default, **kwargs)
+    return json.dumps(WrapperTest.unwrap(obj), default=default, **kwargs)
 
 
 def dump_as_bytes(obj, default=to_primitive, encoding='utf-8', **kwargs):
@@ -214,7 +218,7 @@ def dump_as_bytes(obj, default=to_primitive, encoding='utf-8', **kwargs):
 
     .. versionadded:: 1.10
     """
-    return dumps(obj, default=default, **kwargs).encode(encoding)
+    return dumps(WrapperTest.unwrap(obj), default=default, **kwargs).encode(encoding)
 
 
 def dump(obj, fp, *args, **kwargs):
@@ -233,7 +237,7 @@ def dump(obj, fp, *args, **kwargs):
        The *default* parameter now uses :func:`to_primitive` by default.
     """
     default = kwargs.get('default', to_primitive)
-    return json.dump(obj, fp, default=default, *args, **kwargs)
+    return json.dump(WrapperTest.unwrap(obj), fp, default=default, *args, **kwargs)
 
 
 def loads(s, encoding='utf-8', **kwargs):
